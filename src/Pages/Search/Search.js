@@ -4,11 +4,10 @@ import Book from "../../Components/Book/Book";
 import * as BooksAPI from "../../BooksAPI";
 import {Link} from "react-router-dom"
 const Search = (props) => {
-  const [query, setQuery] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
-  const searchBook = async (event) => {
-    const res = await BooksAPI.search(query);
-    if (event.key === "Enter") {
+  const searchBook = async (input) => {
+    const res = await BooksAPI.search(input);
+    if (res!==null) {
       setSearchResult(res);
     }
   };
@@ -24,15 +23,14 @@ const Search = (props) => {
               type="text"
               placeholder="Search by title, author, or ISBN"
               onChange={(event) => {
-                setQuery(event.target.value);
+                searchBook(event.target.value);
               }}
-              onKeyDown={searchBook}
             />
           </div>
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {query &&
+            {
               searchResult.length !== 0 &&
               searchResult.map((book, key) => {
                 let found = false;

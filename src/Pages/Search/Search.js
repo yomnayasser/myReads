@@ -5,10 +5,26 @@ import * as BooksAPI from "../../BooksAPI";
 import {Link} from "react-router-dom"
 const Search = (props) => {
   const [searchResult, setSearchResult] = useState([]);
-  const searchBook = async (input) => {
-    const res = await BooksAPI.search(input);
-    if (res!==null) {
-      setSearchResult(res);
+  const [searching,setSearching]=useState(false)
+  const searchBook = async (input,event) => {
+    event.preventDefault();
+    try{
+      const res = await BooksAPI.search(input);
+   
+      if(input==='' || res?.length===0)
+      {
+        
+         setSearchResult([])
+      }
+      else{
+       
+        setSearchResult(res)
+      }
+      // setSearching(true)
+
+    }
+    catch(e){
+
     }
   };
   return (
@@ -23,7 +39,7 @@ const Search = (props) => {
               type="text"
               placeholder="Search by title, author, or ISBN"
               onChange={(event) => {
-                searchBook(event.target.value);
+                searchBook(event.target.value,event);
               }}
             />
           </div>
@@ -31,14 +47,15 @@ const Search = (props) => {
         <div className="search-books-results">
           <ol className="books-grid">
             {
-              searchResult.length !== 0 &&
-              searchResult.map((book, key) => {
+              searchResult.length!==0 &&
+              searchResult.map((book) => {
                 let found = false;
                 for (let i = 0; i < props.Books.length; i++) {
                   if (book.id === props.Books[i].id) {
                     found = true;
+                    console.log(props.Books[i])
                     return (
-                      <li key={key}>
+                      <li key={props.Books[i].id}>
                         <Book
                           book={props.Books[i]}
                           changeStatus={props.changeStatus}
@@ -48,8 +65,9 @@ const Search = (props) => {
                   }
                 }
                 if (!found) {
+                  //console.log(book)
                   return (
-                    <li key={key}>
+                    <li key={book.id}>
                       <Book book={book} changeStatus={props.changeStatus} />
                     </li>
                   );
